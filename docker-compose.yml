@@ -1,0 +1,29 @@
+version: '3'
+services:
+  client:
+    build:
+      context: ./client
+    volumes:
+      - ./client:/app
+    environment:
+      - ZMQ_ADDRESS=tcp://device:5559
+      
+  device:
+    build:
+      context: ./device
+    volumes:
+      - ./device:/app   
+    ports:
+      - "5559:5559"   # expose ZMQ_CLIENT_ADDRESS
+      - "5560:5560"   # expose ZMQ_SERVER_ADDRESS
+    environment:
+      - ZMQ_CLIENT_ADDRESS=tcp://0.0.0.0:5559
+      - ZMQ_SERVER_ADDRESS=tcp://0.0.0.0:5560
+
+  server:
+    build:
+      context: ./server
+    volumes:
+      - ./server:/app
+    environment:
+      - ZMQ_ADDRESS=tcp://device:5560
